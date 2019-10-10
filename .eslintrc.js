@@ -30,6 +30,16 @@ module.exports = {
       'warn',
       { extensions: ['.jsx', '.js'] }
     ],
-    'import/prefer-default-export': 'off'
+    'import/prefer-default-export': 'off',
+    'no-console': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    'no-param-reassign': 'off'
   },
+  settings: {
+    'import/resolver': {
+      'babel-plugin-root-import': {
+        rootPathSuffix: 'src',
+      }
+    }
+  }
 };
