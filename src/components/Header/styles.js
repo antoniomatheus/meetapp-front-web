@@ -27,6 +27,7 @@ export const Content = styled.div`
 
 export const Profile = styled.div`
   display: flex;
+  margin-left: 20px;
 
   div {
     text-align: right;
