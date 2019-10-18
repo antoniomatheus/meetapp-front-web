@@ -45,8 +45,10 @@ export const Container = styled.div`
       font-weight: bold;
       color: #fff;
       border: 0;
+      padding: 0 15px;
       border-radius: 4px;
       font-size: 16px;
+      align-self: flex-end;
       transition: background 0.2s;
 
       &:hover {
