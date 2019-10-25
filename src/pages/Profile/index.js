@@ -9,14 +9,14 @@ export default function Profile() {
   const profile = useSelector(state => state.user.profile);
   const dispatch = useDispatch();
 
-  const [file, setFile] = useState(profile.avatar.id);
+  const [file, setFile] = useState(profile.avatar && profile.avatar.id);
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
   const [oldPassword, setOldPassword] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const [preview, setPreview] = useState(profile.avatar.url);
+  const [preview, setPreview] = useState(profile.avatar && profile.avatar.url);
 
   function handleSubmit() {
     dispatch(
