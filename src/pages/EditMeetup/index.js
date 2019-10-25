@@ -1,10 +1,22 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
+import * as Yup from 'yup';
+import { parseISO } from 'date-fns';
+import DatePicker from 'react-datepicker';
+import { Form, Input } from '@rocketseat/unform';
 import api from '~/services/api';
 
-import { Container, Image, DateTime } from './styles';
+import 'react-datepicker/dist/react-datepicker.css';
+
+import { Container, Image } from './styles';
 import Button from '~/components/Button';
+
+const schema = Yup.object().shape({
+  title: Yup.string().required('Title is required'),
+  description: Yup.string().required('A description is required'),
+  location: Yup.string().required('A location is required'),
+});
 
 export default function EditMeetup({ history }) {
   const meetup = history.location.state && history.location.state.meetup;
@@ -12,10 +24,7 @@ export default function EditMeetup({ history }) {
 
   const [file, setFile] = useState(meetup && meetup.image_id);
   const [preview, setPreview] = useState(meetup && meetup.image.url);
-  const [title, setTitle] = useState(meetup && meetup.title);
-  const [description, setDescription] = useState(meetup && meetup.description);
   const [date, setDate] = useState(meetup && meetup.date_time);
-  const [location, setLocation] = useState(meetup && meetup.location);
 
   async function handleFileChange(e) {
     try {
@@ -34,7 +43,7 @@ export default function EditMeetup({ history }) {
     }
   }
 
-  async function handleSubmit() {
+  async function handleSubmit({ title, description, location }) {
     const body = {
       title,
       description,
@@ -64,48 +73,39 @@ export default function EditMeetup({ history }) {
 
   return (
     <Container>
-      <Image>
-        <label htmlFor="avatar">
-          {preview ? (
-            <img src={preview} alt="" />
-          ) : (
-            <span>Select an image</span>
-          )}
+      <Form onSubmit={handleSubmit} initialData={meetup} schema={schema}>
+        <Image>
+          <label htmlFor="avatar">
+            {preview ? (
+              <img src={preview} alt="" />
+            ) : (
+              <span>Select an image</span>
+            )}
 
-          <input
-            type="file"
-            id="avatar"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-        </label>
-      </Image>
+            <input
+              type="file"
+              id="avatar"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </label>
+        </Image>
 
-      <input
-        type="text"
-        placeholder="Title"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-      />
-      <textarea
-        placeholder="Description"
-        value={description}
-        onChange={e => setDescription(e.target.value)}
-      />
-      <DateTime
-        type="datetime-local"
-        placeholder="Date"
-        value={date}
-        onChange={e => setDate(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Location"
-        value={location}
-        onChange={e => setLocation(e.target.value)}
-      />
+        <Input type="text" placeholder="Title" name="title" />
+        <Input multiline placeholder="Description" name="description" />
+        <DatePicker
+          selected={parseISO(date)}
+          onChange={newDate => setDate(newDate)}
+          timeFormat="HH:mm"
+          showTimeSelect
+          timeIntervals={5}
+          timeCaption="Time"
+          dateFormat="d/MM/yyyy H:mm"
+        />
+        <Input type="text" placeholder="Location" name="location" />
 
-      <Button onClick={handleSubmit}>{editing ? 'Save' : 'Create'}</Button>
+        <Button type="submit">{editing ? 'Save' : 'Create'}</Button>
+      </Form>
     </Container>
   );
 }

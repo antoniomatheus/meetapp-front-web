@@ -1,24 +1,47 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import * as Yup from 'yup';
+import { Form, Input } from '@rocketseat/unform';
 
 import { updateProfileRequest } from '~/store/modules/user/actions';
 import { Container, Image } from './styles';
 import api from '~/services/api';
+
+const schema = Yup.object().shape({
+  name: Yup.string(),
+  email: Yup.string().email('Insert a valid e-mail'),
+  avatar_id: Yup.number(),
+  oldPassword: Yup.string(),
+  password: Yup.string().when('oldPassword', (oldPassword, field) =>
+    oldPassword
+      ? field
+          .min(6, 'The password needs at least 6 characters')
+          .required('Insert your new password')
+      : field
+  ),
+  confirmPassword: Yup.string().when('oldPassword', (password, field) =>
+    password
+      ? field
+          .required('Insert your new password')
+          .oneOf(['password'], "The passwords don't match")
+      : field
+  ),
+});
 
 export default function Profile() {
   const profile = useSelector(state => state.user.profile);
   const dispatch = useDispatch();
 
   const [file, setFile] = useState(profile.avatar && profile.avatar.id);
-  const [name, setName] = useState(profile.name);
-  const [email, setEmail] = useState(profile.email);
-  const [oldPassword, setOldPassword] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
   const [preview, setPreview] = useState(profile.avatar && profile.avatar.url);
 
-  function handleSubmit() {
+  async function handleSubmit({
+    name,
+    email,
+    oldPassword,
+    password,
+    confirmPassword,
+  }) {
     dispatch(
       updateProfileRequest({
         name,
@@ -50,7 +73,7 @@ export default function Profile() {
 
   return (
     <Container>
-      <form>
+      <Form initialData={profile} onSubmit={handleSubmit} schema={schema}>
         <Image>
           <label htmlFor="avatar">
             <img
@@ -70,43 +93,25 @@ export default function Profile() {
           </label>
         </Image>
 
-        <input
-          placeholder="Your complete name"
-          value={name}
-          onChange={setName}
-        />
-        <input
-          type="email"
-          placeholder="Your e-mail address"
-          value={email}
-          onChange={setEmail}
-        />
+        <Input type="text" placeholder="Your complete name" name="name" />
+        <Input type="email" placeholder="Your e-mail address" name="email" />
 
         <hr />
 
-        <input
+        <Input
           type="password"
           placeholder="You current password"
-          value={oldPassword}
-          onChange={setOldPassword}
+          name="oldPassword"
         />
-        <input
-          type="password"
-          placeholder="You new password"
-          value={password}
-          onChange={setPassword}
-        />
-        <input
+        <Input type="password" placeholder="You new password" name="password" />
+        <Input
           type="password"
           placeholder="Confirm your new password"
-          value={confirmPassword}
-          onChange={setConfirmPassword}
+          name="confirmPassword"
         />
 
-        <button type="button" onClick={handleSubmit}>
-          Update profile
-        </button>
-      </form>
+        <button type="submit">Update profile</button>
+      </Form>
     </Container>
   );
 }
