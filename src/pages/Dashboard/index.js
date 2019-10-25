@@ -47,7 +47,7 @@ export default function Dashboard() {
     <Container>
       <TitleContainer>
         <Title>My Meetups</Title>
-        <Button>New Meetups</Button>
+        <Button onClick={() => history.push('editmeetup')}>New Meetup</Button>
       </TitleContainer>
       {meetups.map(meetup => (
         <Meetup onClick={() => history.push('/description', { meetup })}>
