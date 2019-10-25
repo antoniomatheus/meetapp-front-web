@@ -19,11 +19,11 @@ const schema = Yup.object().shape({
           .required('Insert your new password')
       : field
   ),
-  confirmPassword: Yup.string().when('oldPassword', (password, field) =>
+  confirmPassword: Yup.string().when('password', (password, field) =>
     password
       ? field
           .required('Insert your new password')
-          .oneOf(['password'], "The passwords don't match")
+          .oneOf([password], "The passwords don't match")
       : field
   ),
 });
