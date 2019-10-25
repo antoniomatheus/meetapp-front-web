@@ -42,7 +42,7 @@ export default function Header() {
             />
           </Profile>
           <Button type="button" onClick={handleSignOut}>
-            Sign Out
+            Sign out
           </Button>
         </aside>
       </Content>

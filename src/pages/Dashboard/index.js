@@ -50,7 +50,10 @@ export default function Dashboard() {
         <Button onClick={() => history.push('editmeetup')}>New Meetup</Button>
       </TitleContainer>
       {meetups.map(meetup => (
-        <Meetup onClick={() => history.push('/description', { meetup })}>
+        <Meetup
+          key={String(meetup.id)}
+          onClick={() => history.push('/description', { meetup })}
+        >
           <MeetupTitle>{meetup.title}</MeetupTitle>
           <DateText>{meetup.parsedDate}</DateText>
         </Meetup>

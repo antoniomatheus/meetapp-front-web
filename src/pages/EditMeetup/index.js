@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 import api from '~/services/api';
 
 import { Container, Image, DateTime } from './styles';
 import Button from '~/components/Button';
 
-export default function EditMeetup() {
-  const [file, setFile] = useState('');
-  const [preview, setPreview] = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState('');
-  const [location, setLocation] = useState('');
+export default function EditMeetup({ history }) {
+  const meetup = history.location.state && history.location.state.meetup;
+  const editing = Boolean(history.location.state);
+
+  const [file, setFile] = useState(meetup && meetup.image_id);
+  const [preview, setPreview] = useState(meetup && meetup.image.url);
+  const [title, setTitle] = useState(meetup && meetup.title);
+  const [description, setDescription] = useState(meetup && meetup.description);
+  const [date, setDate] = useState(meetup && meetup.date_time);
+  const [location, setLocation] = useState(meetup && meetup.location);
 
   async function handleFileChange(e) {
     try {
@@ -31,20 +35,30 @@ export default function EditMeetup() {
   }
 
   async function handleSubmit() {
-    try {
-      const body = {
-        title,
-        description,
-        date_time: date,
-        location,
-        image_id: file,
-      };
+    const body = {
+      title,
+      description,
+      date_time: date,
+      location,
+      image_id: file,
+    };
 
-      await api.post('meetups', body);
+    if (editing) {
+      try {
+        await api.put(`meetups/${meetup.id}`, body);
 
-      toast.success('The meetup was created');
-    } catch (err) {
-      console.tron.log(err);
+        toast.success('The meetup was succesfully updated');
+      } catch (err) {
+        console.tron.log(err);
+      }
+    } else {
+      try {
+        await api.post('meetups', body);
+
+        toast.success('The meetup was succesfully created');
+      } catch (err) {
+        console.tron.log(err);
+      }
     }
   }
 
@@ -91,7 +105,27 @@ export default function EditMeetup() {
         onChange={e => setLocation(e.target.value)}
       />
 
-      <Button onClick={handleSubmit}>Save</Button>
+      <Button onClick={handleSubmit}>{editing ? 'Save' : 'Create'}</Button>
     </Container>
   );
 }
+
+EditMeetup.propTypes = {
+  history: PropTypes.shape({
+    location: PropTypes.shape({
+      state: PropTypes.shape({
+        meetup: PropTypes.shape({
+          title: PropTypes.string,
+          image: PropTypes.shape({
+            url: PropTypes.string,
+          }),
+          image_id: PropTypes.number,
+          description: PropTypes.string,
+          parsedDate: PropTypes.string,
+          location: PropTypes.string,
+        }),
+      }),
+    }),
+    push: PropTypes.func,
+  }).isRequired,
+};

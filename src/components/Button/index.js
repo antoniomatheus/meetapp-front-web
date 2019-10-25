@@ -8,7 +8,7 @@ export default function DefaultButton({ children, ...rest }) {
 }
 
 DefaultButton.propTypes = {
-  children: PropTypes.oneOf([PropTypes.node, PropTypes.element]),
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.element]),
 };
 
 DefaultButton.defaultProps = {

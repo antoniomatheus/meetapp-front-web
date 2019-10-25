@@ -22,6 +22,9 @@ export default function Notifications() {
     [notifications]
   );
 
+  const root = document.getElementById('root');
+  root.addEventListener('click', () => setVisible(false));
+
   useEffect(() => {
     async function loadNotifications() {
       const response = await api.get('notifications');

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import api from '~/services/api';
 
 import {
   Container,
@@ -16,13 +17,27 @@ import Button from '~/components/Button';
 export default function Description({ history }) {
   const { meetup } = history.location.state;
 
+  function handleEdit() {
+    history.push('editmeetup', { meetup, editing: true });
+  }
+
+  async function handleCancel() {
+    try {
+      await api.delete(`meetups/${meetup.id}`);
+
+      history.push('dashboard');
+    } catch (err) {
+      console.tron.log(err);
+    }
+  }
+
   return (
     <Container>
       <TitleContainer>
         <Title>{meetup.title}</Title>
         <Control>
-          <EditButton>Edit</EditButton>
-          <Button>Cancel</Button>
+          <EditButton onClick={handleEdit}>Edit</EditButton>
+          <Button onClick={handleCancel}>Cancel</Button>
         </Control>
       </TitleContainer>
 
@@ -43,6 +58,7 @@ Description.propTypes = {
     location: PropTypes.shape({
       state: PropTypes.shape({
         meetup: PropTypes.shape({
+          id: PropTypes.number,
           title: PropTypes.string,
           image: PropTypes.shape({
             url: PropTypes.string,
@@ -53,5 +69,6 @@ Description.propTypes = {
         }),
       }),
     }),
+    push: PropTypes.func,
   }).isRequired,
 };
