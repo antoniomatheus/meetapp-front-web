@@ -24,7 +24,7 @@ export default function EditMeetup({ history }) {
 
   const [file, setFile] = useState(meetup && meetup.image_id);
   const [preview, setPreview] = useState(meetup && meetup.image.url);
-  const [date, setDate] = useState(meetup && meetup.date_time);
+  const [date, setDate] = useState(meetup && parseISO(meetup.date_time));
 
   async function handleFileChange(e) {
     try {
@@ -94,7 +94,7 @@ export default function EditMeetup({ history }) {
         <Input type="text" placeholder="Title" name="title" />
         <Input multiline placeholder="Description" name="description" />
         <DatePicker
-          selected={parseISO(date)}
+          selected={date}
           onChange={newDate => setDate(newDate)}
           timeFormat="HH:mm"
           showTimeSelect
